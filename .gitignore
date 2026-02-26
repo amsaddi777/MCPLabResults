@@ -21,6 +21,7 @@ coverage.opencover.xml
 
 # Logs
 *.log
+*.txt
 
 # NuGet
 *.nupkg
@@ -40,3 +41,20 @@ Thumbs.db
 **/*.exe
 **/*.dll
 **/*.pdb
+# Next.js / LabResultApp
+LabResultApp/.next/
+LabResultApp/node_modules/
+LabResultApp/.env
+LabResultApp/.env.local
+LabResultApp/.env.development.local
+LabResultApp/.env.test.local
+LabResultApp/.env.production.local
+LabResultApp/npm-debug.log*
+LabResultApp/yarn-debug.log*
+LabResultApp/yarn-error.log*
+LabResultApp/.pnpm-debug.log*
+LabResultApp/dist/
+LabResultApp/out/
+LabResultApp/.turbo/
+LabResultApp/.vercel
+LabResultApp/vercel.json
