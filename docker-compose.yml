@@ -1,0 +1,113 @@
+version: "3.9"
+
+services:
+  # ═══════════════════════════════════════
+  # EXISTING: MCP Server (Lab Results)
+  # ═══════════════════════════════════════
+  labresult-mcp:
+    build:
+      context: ./LabResultMcpServer
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - ConnectionStrings__OracleDb=User Id=pensoins;Password=pagame;Data Source=MEDS_COMMUN;
+      - Oracle__TnsAdmin=/app/Connection
+      - ApiKeys__0=your-api-key-1
+      - ApiKeys__1=your-api-key-2
+    volumes:
+      - ./LabResultMcpServer/Connection:/app/Connection:ro
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ═══════════════════════════════════════
+  # NEW: AI Agent (Microsoft Agent Framework)
+  # ═══════════════════════════════════════
+  labresult-agent:
+    build:
+      context: ./LabResultAgent
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - Agent__OllamaUrl=http://ollama:11434
+      - Agent__ModelName=llama3.1
+      - Agent__McpServerUrl=http://labresult-mcp:3001
+      - Agent__McpApiKey=your-api-key-1
+      - Agent__MaxTokens=4096
+      - Auth__Username=admin
+      - Auth__Password=changeme
+      - Auth__Enabled=true
+    depends_on:
+      labresult-mcp:
+        condition: service_started
+      ollama:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ═══════════════════════════════════════
+  # NEW: Frontend (Next.js + CopilotKit)
+  # ═══════════════════════════════════════
+  labresult-app:
+    build:
+      context: ./LabResultApp
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - AGENT_URL=http://labresult-agent:8000
+      - AGENT_AUTH_USERNAME=admin
+      - AGENT_AUTH_PASSWORD=changeme
+      - NEXTAUTH_SECRET=change-this-to-a-random-secret-in-production
+      - NEXTAUTH_URL=http://localhost:3000
+      - AUTH_USERNAME=admin
+      - AUTH_PASSWORD=changeme
+    depends_on:
+      labresult-agent:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════
+  # Ollama (LLM Server)
+  # Replace with external server URL if needed:
+  #   Set Agent__OllamaUrl to the external address
+  #   and remove this service.
+  # ═══════════════════════════════════════
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  ollama-data:
+
+networks:
+  app-network:
+    driver: bridge

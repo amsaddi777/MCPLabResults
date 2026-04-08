@@ -20,8 +20,8 @@ public class LabResult
     public string Subcategory { get; set; } = string.Empty;
     public string TestName { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
-    public string Unit { get; set; } = string.Empty;
-    public string NormalRange { get; set; } = string.Empty;
+    public string? Unit { get; set; } = string.Empty;
+    public string? NormalRange { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty; // L, H, or empty
     public DateTime DatePerformed { get; set; }
     public string ValidatedBy { get; set; } = string.Empty;

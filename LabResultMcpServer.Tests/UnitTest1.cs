@@ -1,6 +1,7 @@
 ﻿using LabResultMcpServer.Services;
 using LabResultMcpServer.Models;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
@@ -14,12 +15,10 @@ public class LabResultServiceTests
     [Fact]
     public void Constructor_ShouldInitializeService()
     {
-        // Arrange
+        // Arrange - load connection string from LabResultMcpServer/appsettings.json
         var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:OracleDb"] = "fake"
-            })
+            .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "LabResultMcpServer", "appsettings.json"), optional: false, reloadOnChange: false)
+            .AddEnvironmentVariables()
             .Build();
         var logger = NullLogger<LabResultService>.Instance;
 
@@ -33,30 +32,26 @@ public class LabResultServiceTests
     [Fact]
     public async Task FetchLabResultsAsync_WithValidPatientId_ShouldReturnPatientInfo()
     {
-        // Arrange
+        // Arrange - load connection string from LabResultMcpServer/appsettings.json
         var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:OracleDb"] = "fake"
-            })
+            .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "LabResultMcpServer", "appsettings.json"), optional: false, reloadOnChange: false)
+            .AddEnvironmentVariables()
             .Build();
         var logger = NullLogger<LabResultService>.Instance;
         var service = new LabResultService(config, logger);
 
         // Act & Assert
         // This will fail with DB connection error, but demonstrates the test structure
-        await Assert.ThrowsAnyAsync<Exception>(() => service.FetchLabResultsAsync("12345", "", null));
+        await Assert.ThrowsAnyAsync<Exception>(() => service.FetchLabResultsAsync("25001681", "", null));
     }
 
     [Fact]
     public async Task FetchLabResultsAsync_WithNullPatientId_ShouldHandleGracefully()
     {
-        // Arrange
+        // Arrange - load connection string from LabResultMcpServer/appsettings.json
         var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:OracleDb"] = "fake"
-            })
+            .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "LabResultMcpServer", "appsettings.json"), optional: false, reloadOnChange: false)
+            .AddEnvironmentVariables()
             .Build();
         var logger = NullLogger<LabResultService>.Instance;
         var service = new LabResultService(config, logger);
@@ -68,12 +63,10 @@ public class LabResultServiceTests
     [Fact]
     public async Task FetchLabResultsAsync_WithDateRange_ShouldApplyFilters()
     {
-        // Arrange
+        // Arrange - load connection string from LabResultMcpServer/appsettings.json
         var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:OracleDb"] = "fake"
-            })
+            .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "LabResultMcpServer", "appsettings.json"), optional: false, reloadOnChange: false)
+            .AddEnvironmentVariables()
             .Build();
         var logger = NullLogger<LabResultService>.Instance;
         var service = new LabResultService(config, logger);

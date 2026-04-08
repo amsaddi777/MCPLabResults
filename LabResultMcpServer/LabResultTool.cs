@@ -18,10 +18,10 @@ public class LabResultTool
     [McpServerTool(Name = "fetch_patient_lab_results"), Description("Fetches laboratory results for a patient from the database.")]
     public async Task<string> FetchLabResults(
         [Description("The patient ID to fetch results for")] string patientId,
-        [Description("Optional NDA for filtering results")] string? nda = null,
+        [Description("Optional NDA for filtering results")] string nda = null,
         [Description("Optional date range for filtering results")] DateRange? dateRange = null)
     {
-        var result = await _service.FetchLabResultsAsync(patientId, nda ?? string.Empty, dateRange);
+        var result = await _service.FetchLabResultsAsync(patientId, nda, dateRange);
         return System.Text.Json.JsonSerializer.Serialize(result);
     }
 }

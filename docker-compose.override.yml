@@ -1,0 +1,18 @@
+version: "3.9"
+
+# Development overrides — used by default with `docker compose up`
+services:
+  labresult-agent:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Auth__Enabled=false
+
+  labresult-app:
+    environment:
+      - NODE_ENV=development
+
+  # For development, you can use a remote Ollama instead:
+  # labresult-agent:
+  #   environment:
+  #     - Agent__OllamaUrl=http://your-remote-ollama:11434
+  # And comment out the ollama service.
